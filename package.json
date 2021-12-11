@@ -1,0 +1,24 @@
+{
+  "name": "final-project",
+  "version": "1.0.0",
+  "description": "final-project",
+  "main": "server.js",
+  "scripts": {
+    "test": "y"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/judgeschreber/doodles.git"
+  },
+  "author": "lukas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/judgeschreber/doodles/issues"
+  },
+  "homepage": "https://github.com/judgeschreber/doodles#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "p5": "^1.4.0",
+    "socket.io": "^4.4.0"
+  }
+}
