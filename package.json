@@ -18,7 +18,10 @@
   "homepage": "https://github.com/judgeschreber/doodles#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "express-handlebars": "^6.0.2",
+    "handlebars": "^4.7.7",
     "p5": "^1.4.0",
-    "socket.io": "^4.4.0"
+    "socket.io": "^4.4.0",
+    "uuid": "^8.3.2"
   }
 }

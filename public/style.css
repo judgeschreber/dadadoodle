@@ -14,6 +14,15 @@ body {
     align-items: center;
 }
 
+.buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: black 1px solid;
+    z-index: 1000;
+    background-color: white;
+}
+
 .color-button {
     width: 30px;
     height: 30px;
@@ -33,4 +42,19 @@ body {
 
 #yellow {
     background-color: yellow;
+}
+
+.line-button {
+    width: 2px;
+    height: 30px;
+    background: black;
+    margin: 10px;
+}
+
+.cover {
+    background-color: black;
+    height: 50vh;
+    width: 100%;
+    position: absolute;
+    top: 0px;
 }
