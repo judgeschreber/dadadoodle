@@ -58,3 +58,36 @@ body {
     position: absolute;
     top: 0px;
 }
+
+.invite-section {
+    position: absolute;
+    top: 40px;
+    left: 10px;
+}
+
+.invite-field > p {
+    font-family: monospace;
+}
+
+.invite-button {
+    background-color: burlywood;
+    font-family: monospace;
+    border: black 3px solid;
+    border-radius: 10px;
+    height: 30px;
+    width: 200px;
+}
+
+#users {
+    position: absolute;
+    top: 40px;
+    right: 10px;
+}
+
+.invite-field {
+    visibility: hidden;
+}
+
+main {
+    border: 3px solid black;
+}

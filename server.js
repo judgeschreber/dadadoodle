@@ -15,31 +15,55 @@ app.set("view engine", "handlebars");
 
 console.log("hello!!");
 
+let randomUrl;
 app.get("/", (req, res) => {
-    let randomUrl = uuidv4();
+    randomUrl = uuidv4();
     console.log("randomUrl ", randomUrl);
     res.render("start", {
         url: randomUrl,
     });
 });
 
+let room;
 app.get("/doodle/*", (req, res) => {
-    res.render("doodle");
+    room = req.params[0];
+    console.log("req.params = ", req.params[0]);
+    res.render("doodle", {
+        url: `http://localhost:3000/doodle/${room}`,
+    });
 });
 
 const server = app.listen(3000);
 
+let connectCounter = 0;
+
 const io = socket(server);
-io.sockets.on("connection", newConnection);
+io.on("connection", (socket) => {
+    socket.join(room);
+    connectCounter++;
+    newConnection(socket);
+    showNewUser(socket.id);
+});
 
 function newConnection(socket) {
     console.log("new connection: ", socket.id);
+    console.log("randomUrl ", randomUrl);
     socket.on("mouse", mouseEmit);
     socket.on("mouseoff", mouseEmit);
+}
 
-    function mouseEmit(data) {
-        console.log("mouseEmit triggered");
-        socket.broadcast.emit("mouse", data);
-        socket.broadcast.emit("mouseoff", data);
-    }
+function mouseEmit(data) {
+    console.log("mouseEmit triggered: ", data);
+    io.to(room).emit("mouse", data);
+    io.to(room).emit("mouseoff", data);
+}
+
+function showNewUser(id) {
+    let allIds = io.sockets.adapter.rooms.get(room).size;
+    console.log("roomsize", allIds);
+    data = {
+        id: id,
+        roomsize: allIds,
+    };
+    io.to(room).emit("userJoined", data);
 }
