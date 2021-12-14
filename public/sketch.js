@@ -5,6 +5,39 @@ let inviteField = document.getElementsByClassName("invite-field");
 let copyText = document.querySelector("#input");
 let newUser = document.querySelector("#users");
 let numberOfDoodlers = document.querySelector("#number-of-doodlers");
+let coverTop = document.querySelector("#cover-top");
+let coverBottom = document.querySelector("#cover-bottom");
+
+let doneButton = document.getElementsByClassName("done-button");
+
+let ec = false;
+const parsedUrl = new URL(window.location.href);
+console.log(parsedUrl);
+if (parsedUrl.pathname.startsWith("/ec")) {
+    ec = true;
+}
+
+let canvas;
+const loadCanvas = () => {
+    console.log("load canvas");
+    canvas = document.getElementsByTagName("canvas");
+    console.log("canvas", canvas);
+    console.log("canvas[0]", canvas[0]);
+    console.log("canvas offsetLeft: ", canvas[0].offsetLeft);
+
+    //Exquisite Corps logic:
+
+    if (ec) {
+        console.log("ec?: ", ec);
+        ec = coverTop.style.left = canvas[0].offsetLeft;
+        coverTop.style.top = canvas[0].offsetTop;
+
+        coverBottom.style.left = canvas[0].offsetLeft;
+        coverBottom.style.bottom = canvas[0].offsetTop;
+    }
+};
+window.onload = loadCanvas;
+window.addEventListener("resize", loadCanvas);
 
 let invite = false;
 function showInvite() {
@@ -31,6 +64,43 @@ colorButton.forEach((element) => {
     });
 });
 
+let newUsers = [];
+function userJoined(data) {
+    console.log(data.roomsize);
+
+    numberOfDoodlers.innerHTML = `Number of Doodlers: ${data.roomsize}`;
+    newUsers.push(data.id);
+
+    // set canvas covers, the first user has the longest array
+    if (newUsers.length === 2) {
+        console.log("newUsers before: ", newUsers);
+        coverTop.style.visibility = "hidden";
+        coverBottom.style.visibility = "visible";
+    }
+    if (newUsers.length <= 1) {
+        console.log("newUsers before: ", newUsers);
+        coverTop.style.visibility = "visible";
+        coverBottom.style.visibility = "hidden";
+    }
+
+    console.log("userjoined triggered in client, ", newUsers);
+    if (newUsers.length > 1) {
+        newUser.insertAdjacentHTML(
+            "beforeend",
+            '<div id="new-user">New user joined</div>'
+        );
+    }
+}
+
+function userLeft(data) {
+    console.log("user left triggered in client");
+    numberOfDoodlers.innerHTML = `Number of Doodlers: ${data.roomsize}`;
+    newUser.insertAdjacentHTML(
+        "beforeend",
+        '<div id="new-user">User left the doodle</div>'
+    );
+}
+
 let strokeColor = "black";
 let sW = 2;
 let dotsArray;
@@ -48,7 +118,7 @@ lineButton[0].addEventListener("click", function (event) {
 });
 
 function setup() {
-    createCanvas(600, 400);
+    createCanvas(600, 600);
 
     noFill();
     dotsArray = [];
@@ -58,21 +128,7 @@ function setup() {
     socket.on("mouse", newDoodle);
     socket.on("mouseoff", otherMouseReleased);
     socket.on("userJoined", userJoined);
-}
-let newUsers = [];
-function userJoined(data) {
-    console.log("userjoined triggered in client, ", data);
-    console.log(data.roomsize);
-
-    numberOfDoodlers.innerHTML = `Number of Doodlers: ${data.roomsize}`;
-    newUsers.push(data.id);
-    console.log("userarray: ", newUsers);
-    if (newUsers.length > 1) {
-        newUser.insertAdjacentHTML(
-            "beforeend",
-            '<div id="new-user">New user joined</div>'
-        );
-    }
+    socket.on("userLeft", userLeft);
 }
 
 function newDoodle(data) {
@@ -94,43 +150,65 @@ function newDoodle(data) {
 
 function draw() {}
 
-let circles = false;
+let drawing = true;
 
 function mouseDragged() {
-    console.log("points before: ", dotsArray);
+    if (drawing) {
+        console.log("points before: ", dotsArray);
 
-    console.log("mouse drag!");
-    let data = {
-        x: mouseX,
-        y: mouseY,
-        strokeColor: strokeColor,
-        strokeWeight: sW,
-    };
-    socket.emit("mouse", data);
+        let data;
+        if (ec && newUsers.length == 2) {
+            console.log("we're in the first conditional, height: ", height);
+            if (mouseY < 300 - canvas[0].offsetTop) {
+                data = {
+                    x: mouseX,
+                    y: mouseY,
+                    strokeColor: strokeColor,
+                    strokeWeight: sW,
+                };
+            }
+        } else if (ec && newUsers.length == 1) {
+            console.log("we're in the second conditional");
+            if (mouseY > 300 - canvas[0].offsetTop) {
+                data = {
+                    x: mouseX,
+                    y: mouseY,
+                    strokeColor: strokeColor,
+                    strokeWeight: sW,
+                };
+            }
+        } else {
+            console.log("we're in the else statement");
+            data = {
+                x: mouseX,
+                y: mouseY,
+                strokeColor: strokeColor,
+                strokeWeight: sW,
+            };
+        }
 
-    if (circles) {
-        //draw circles
+        socket.emit("mouse", data);
+
+        strokeWeight(sW);
+        stroke(strokeColor);
+        beginShape();
+
+        dotsArray.forEach((element) => {
+            curveVertex(element.x, element.y);
+        });
+
+        var dot = {};
+        dot.x = mouseX;
+        dot.y = mouseY;
+
+        dotsArray.push(dot);
+        endShape();
     }
-
-    strokeWeight(sW);
-    stroke(strokeColor);
-    beginShape();
-
-    dotsArray.forEach((element) => {
-        curveVertex(element.x, element.y);
-    });
-
-    var dot = {};
-    dot.x = mouseX;
-    dot.y = mouseY;
-
-    dotsArray.push(dot);
-    endShape();
 }
 
 function mouseReleased() {
     dotsArray = [];
-    let data = {
+    data = {
         mouseoff: true,
     };
     socket.emit("mouseoff", data);
@@ -142,3 +220,16 @@ function otherMouseReleased(data) {
         newDotsArray = [];
     }
 }
+
+console.log("done button: ", doneButton);
+doneButton.forEach((element) => {
+    element.addEventListener(
+        "click",
+        (e) => {
+            console.log("done button clicked");
+            e.target.style["background-color"] = "red";
+            drawing = false;
+        },
+        { once: true }
+    );
+});

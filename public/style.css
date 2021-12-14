@@ -91,3 +91,37 @@ body {
 main {
     border: 3px solid black;
 }
+
+#cover-top {
+    width: 600px;
+    height: 280px;
+    background-color: blue;
+    position: absolute;
+    z-index: 100000;
+}
+
+#cover-bottom {
+    width: 600px;
+    height: 280px;
+    background-color: red;
+    position: absolute;
+    z-index: 100000;
+}
+
+.done-doodling {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: space-around;
+    right: 50px;
+}
+
+.done-button {
+    background-color: burlywood;
+    font-family: monospace;
+    border: black 3px solid;
+    border-radius: 10px;
+    height: 30px;
+    width: 140px;
+}

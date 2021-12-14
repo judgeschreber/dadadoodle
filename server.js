@@ -33,6 +33,14 @@ app.get("/doodle/*", (req, res) => {
     });
 });
 
+app.get("/ec/*", (req, res) => {
+    room = req.params[0];
+    console.log("req.params = ", req.params[0]);
+    res.render("ec", {
+        url: `http://localhost:3000/ec/${room}`,
+    });
+});
+
 const server = app.listen(3000);
 
 let connectCounter = 0;
@@ -43,6 +51,15 @@ io.on("connection", (socket) => {
     connectCounter++;
     newConnection(socket);
     showNewUser(socket.id);
+    socket.on("disconnecting", () => {
+        console.log("disconnect!", socket.rooms);
+        for (const room of socket.rooms) {
+            if (room !== socket.id) {
+                console.log("in if statement");
+                userLeft(socket.id);
+            }
+        }
+    });
 });
 
 function newConnection(socket) {
@@ -66,4 +83,14 @@ function showNewUser(id) {
         roomsize: allIds,
     };
     io.to(room).emit("userJoined", data);
+}
+
+function userLeft(id) {
+    let allIds = io.sockets.adapter.rooms.get(room).size;
+    console.log("user left: ", allIds);
+    data = {
+        id: id,
+        roomsize: (allIds -= 1),
+    };
+    io.to(room).emit("userLeft", data);
 }
