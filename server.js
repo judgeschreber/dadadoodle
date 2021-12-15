@@ -67,11 +67,16 @@ function newConnection(socket) {
     console.log("randomUrl ", randomUrl);
     socket.on("mouse", mouseEmit);
     socket.on("mouseoff", mouseEmit);
+    socket.on("done", doneClick);
+    socket.on("clear", clearCanvas);
 }
 
 function mouseEmit(data) {
     console.log("mouseEmit triggered: ", data);
+
     io.to(room).emit("mouse", data);
+   
+    
     io.to(room).emit("mouseoff", data);
 }
 
@@ -93,4 +98,16 @@ function userLeft(id) {
         roomsize: (allIds -= 1),
     };
     io.to(room).emit("userLeft", data);
+}
+
+function doneClick(data) {
+    let doneArray = [];
+    doneArray.push(data);
+
+    io.to(room).emit("userDone", doneArray);
+}
+
+function clearCanvas(data) {
+    console.log("clearCanvas in server: ", data);
+    io.to(room).emit("clearCanvas", data);
 }

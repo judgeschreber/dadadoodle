@@ -28,6 +28,11 @@ body {
     height: 30px;
     margin: 10px;
 }
+.circle-button {
+    width: 30px;
+    height: 30px;
+    margin: 10px;
+}
 #red {
     background-color: red;
 }
@@ -44,9 +49,21 @@ body {
     background-color: yellow;
 }
 
-.line-button {
+#circle {
+    border: 1px black solid;
+    border-radius: 50%;
+}
+
+.linewidth-button {
     width: 2px;
     height: 30px;
+    background: black;
+    margin: 10px;
+}
+
+.line-button {
+    width: 30px;
+    height: 5px;
     background: black;
     margin: 10px;
 }
@@ -118,6 +135,23 @@ main {
 }
 
 .done-button {
+    background-color: burlywood;
+    font-family: monospace;
+    border: black 3px solid;
+    border-radius: 10px;
+    height: 30px;
+    width: 140px;
+}
+
+.after-draw-buttons {
+    position: absolute;
+    width: 100vw;
+    display: flex;
+    justify-content: space-around;
+    bottom: 10px;
+}
+
+.redo-button {
     background-color: burlywood;
     font-family: monospace;
     border: black 3px solid;

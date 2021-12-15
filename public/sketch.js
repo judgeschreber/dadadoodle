@@ -1,5 +1,5 @@
 let colorButton = document.getElementsByClassName("color-button");
-let lineButton = document.getElementsByClassName("line-button");
+let linewidthButton = document.getElementsByClassName("linewidth-button");
 let inviteButton = document.getElementsByClassName("invite-button");
 let inviteField = document.getElementsByClassName("invite-field");
 let copyText = document.querySelector("#input");
@@ -7,6 +7,21 @@ let newUser = document.querySelector("#users");
 let numberOfDoodlers = document.querySelector("#number-of-doodlers");
 let coverTop = document.querySelector("#cover-top");
 let coverBottom = document.querySelector("#cover-bottom");
+let redoButton = document.querySelector("#redo");
+
+let lineButton = document.querySelector("#line");
+lineButton.addEventListener("click", () => {
+    console.log("line button");
+    circle = false;
+    line = true;
+});
+
+let circleButton = document.querySelector("#circle");
+circleButton.addEventListener("click", () => {
+    console.log("circle button");
+    circle = true;
+    line = false;
+});
 
 let doneButton = document.getElementsByClassName("done-button");
 
@@ -72,17 +87,22 @@ function userJoined(data) {
     newUsers.push(data.id);
 
     // set canvas covers, the first user has the longest array
-    if (newUsers.length === 2) {
-        console.log("newUsers before: ", newUsers);
-        coverTop.style.visibility = "hidden";
-        coverBottom.style.visibility = "visible";
+    if (ec) {
+        if (newUsers.length === 2) {
+            console.log("newUsers before: ", newUsers);
+            coverTop.style.visibility = "hidden";
+            coverBottom.style.visibility = "visible";
+            doneButton[0].style.visibility = "visible";
+            doneButton[1].style.visibility = "hidden";
+        }
+        if (newUsers.length <= 1) {
+            console.log("newUsers before: ", newUsers);
+            coverTop.style.visibility = "visible";
+            coverBottom.style.visibility = "hidden";
+            doneButton[1].style.visibility = "visible";
+            doneButton[0].style.visibility = "hidden";
+        }
     }
-    if (newUsers.length <= 1) {
-        console.log("newUsers before: ", newUsers);
-        coverTop.style.visibility = "visible";
-        coverBottom.style.visibility = "hidden";
-    }
-
     console.log("userjoined triggered in client, ", newUsers);
     if (newUsers.length > 1) {
         newUser.insertAdjacentHTML(
@@ -106,8 +126,7 @@ let sW = 2;
 let dotsArray;
 let newDotsArray;
 
-console.log("lineButton: ", lineButton);
-lineButton[0].addEventListener("click", function (event) {
+linewidthButton[0].addEventListener("click", function (event) {
     if (sW < 11) {
         sW++;
         event.target.style.width = `${sW}px`;
@@ -129,80 +148,65 @@ function setup() {
     socket.on("mouseoff", otherMouseReleased);
     socket.on("userJoined", userJoined);
     socket.on("userLeft", userLeft);
+    socket.on("userDone", userDone);
+    socket.on("clearCanvas", clearCanvas);
 }
 
 function newDoodle(data) {
-    stroke(data.strokeColor);
-    strokeWeight(data.strokeWeight);
-    beginShape();
-
-    newDotsArray.forEach((element) => {
-        curveVertex(element.x, element.y);
-    });
-
-    var dot = {};
-    dot.x = data.x;
-    dot.y = data.y;
-
-    newDotsArray.push(dot);
-    endShape();
-}
-
-function draw() {}
-
-let drawing = true;
-
-function mouseDragged() {
-    if (drawing) {
-        console.log("points before: ", dotsArray);
-
-        let data;
-        if (ec && newUsers.length == 2) {
-            console.log("we're in the first conditional, height: ", height);
-            if (mouseY < 300 - canvas[0].offsetTop) {
-                data = {
-                    x: mouseX,
-                    y: mouseY,
-                    strokeColor: strokeColor,
-                    strokeWeight: sW,
-                };
-            }
-        } else if (ec && newUsers.length == 1) {
-            console.log("we're in the second conditional");
-            if (mouseY > 300 - canvas[0].offsetTop) {
-                data = {
-                    x: mouseX,
-                    y: mouseY,
-                    strokeColor: strokeColor,
-                    strokeWeight: sW,
-                };
-            }
-        } else {
-            console.log("we're in the else statement");
-            data = {
-                x: mouseX,
-                y: mouseY,
-                strokeColor: strokeColor,
-                strokeWeight: sW,
-            };
-        }
-
-        socket.emit("mouse", data);
-
-        strokeWeight(sW);
-        stroke(strokeColor);
+    console.log("data type: ", data.type);
+    if (data.type == "line") {
+        stroke(data.strokeColor);
+        strokeWeight(data.strokeWeight);
         beginShape();
 
-        dotsArray.forEach((element) => {
+        newDotsArray.forEach((element) => {
             curveVertex(element.x, element.y);
         });
 
         var dot = {};
-        dot.x = mouseX;
-        dot.y = mouseY;
+        dot.x = data.x;
+        dot.y = data.y;
 
-        dotsArray.push(dot);
+        newDotsArray.push(dot);
         endShape();
+    } else if (data.type == "circle") {
+        fill(data.strokeColor);
+        ellipse(data.x, data.y, 50, 50);
+    }
+}
+
+let lineArray = [];
+
+function draw() {
+    strokeWeight(2);
+    stroke("black");
+
+    beginShape();
+    lineArray.forEach((dot) => {
+        curveVertex(dot.x, dot.y);
+    });
+
+    let dot = {
+        x: Math.floor(random(width)),
+        y: Math.floor(random(height)),
+    };
+
+    lineArray.push(dot);
+    endShape();
+
+    frameRate(4);
+    console.log("line array: ", lineArray);
+}
+
+let drawing = true;
+let circle = false;
+let line = true;
+
+function mouseDragged() {
+    if (line) {
+        drawLine();
+    } else if (circle) {
+        drawCircle();
     }
 }
 
@@ -221,7 +225,6 @@ function otherMouseReleased(data) {
     }
 }
 
-console.log("done button: ", doneButton);
 doneButton.forEach((element) => {
     element.addEventListener(
         "click",
@@ -229,7 +232,147 @@ doneButton.forEach((element) => {
             console.log("done button clicked");
             e.target.style["background-color"] = "red";
             drawing = false;
+            socket.emit("done", "pressed done");
         },
         { once: true }
     );
 });
+
+let doneArray = [];
+function userDone(data) {
+    doneArray.push(data);
+    console.log("userDone in client: ", doneArray);
+    if (doneArray.length === 2) {
+        coverTop.style.visibility = "hidden";
+        coverBottom.style.visibility = "hidden";
+    }
+}
+
+redoButton.addEventListener("click", function () {
+    console.log("redoButton triggered");
+    socket.emit("clear", "clear canvas");
+});
+
+function clearCanvas() {
+    console.log("clear canvas in client");
+    clear();
+    doneArray = [];
+    if (newUsers.length === 2) {
+        console.log("newUsers before: ", newUsers);
+        coverTop.style.visibility = "hidden";
+        coverBottom.style.visibility = "visible";
+        doneButton[0].style.visibility = "visible";
+        doneButton[1].style.visibility = "hidden";
+    }
+    if (newUsers.length <= 1) {
+        console.log("newUsers before: ", newUsers);
+        coverTop.style.visibility = "visible";
+        coverBottom.style.visibility = "hidden";
+        doneButton[1].style.visibility = "visible";
+        doneButton[0].style.visibility = "hidden";
+    }
+    doneButton.forEach((element) => {
+        element.style["background-color"] = "burlywood";
+    });
+    drawing = true;
+}
+
+function drawLine() {
+    if (ec && newUsers.length == 2) {
+        if (mouseY < 300) {
+            drawing = true;
+        } else {
+            drawing = false;
+        }
+    } else if (ec && newUsers.length == 1) {
+        if (mouseY > 300) {
+            drawing = true;
+        } else {
+            drawing = false;
+        }
+    } else {
+        drawing = true;
+    }
+
+    console.log("distance: ", 300 + canvas[0].offsetTop);
+
+    if (drawing) {
+        let data;
+
+        console.log("we're in the else statement");
+        data = {
+            x: mouseX,
+            y: mouseY,
+            strokeColor: strokeColor,
+            strokeWeight: sW,
+            type: "line",
+        };
+
+        socket.emit("mouse", data);
+        noFill();
+        strokeWeight(sW);
+        stroke(strokeColor);
+        beginShape();
+
+        dotsArray.forEach((element) => {
+            curveVertex(element.x, element.y);
+        });
+
+        var dot = {};
+        dot.x = mouseX;
+        dot.y = mouseY;
+
+        dotsArray.push(dot);
+        endShape();
+    } else {
+        console.log("we're not drawing");
+        return;
+    }
+}
+
+function drawCircle() {
+    if (ec && newUsers.length == 2) {
+        if (mouseY < 300) {
+            drawing = true;
+        } else {
+            drawing = false;
+        }
+    } else if (ec && newUsers.length == 1) {
+        if (mouseY > 300) {
+            drawing = true;
+        } else {
+            drawing = false;
+        }
+    } else {
+        drawing = true;
+    }
+
+    console.log("distance: ", 300 + canvas[0].offsetTop);
+
+    if (drawing) {
+        let data;
+
+        console.log("we're in the else statement");
+        data = {
+            x: mouseX,
+            y: mouseY,
+            strokeColor: strokeColor,
+            type: "circle",
+        };
+
+        socket.emit("mouse", data);
+        beginShape();
+
+        let circle = {};
+        circle.x = mouseX;
+        circle.y = mouseY;
+        fill(strokeColor);
+        stroke(strokeColor);
+        ellipse(mouseX, mouseY, 50, 50);
+
+        endShape();
+    } else {
+        console.log("we're not drawing");
+        return;
+    }
+}
