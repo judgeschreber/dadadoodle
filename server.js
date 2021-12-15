@@ -43,12 +43,9 @@ app.get("/ec/*", (req, res) => {
 
 const server = app.listen(3000);
 
-let connectCounter = 0;
-
 const io = socket(server);
 io.on("connection", (socket) => {
     socket.join(room);
-    connectCounter++;
     newConnection(socket);
     showNewUser(socket.id);
     socket.on("disconnecting", () => {
@@ -69,14 +66,14 @@ function newConnection(socket) {
     socket.on("mouseoff", mouseEmit);
     socket.on("done", doneClick);
     socket.on("clear", clearCanvas);
+    socket.on("emitUserName", usersToClient);
 }
 
 function mouseEmit(data) {
     console.log("mouseEmit triggered: ", data);
 
     io.to(room).emit("mouse", data);
-   
-    
+
     io.to(room).emit("mouseoff", data);
 }
 
@@ -110,4 +107,23 @@ function doneClick(data) {
 function clearCanvas(data) {
     console.log("clearCanvas in server: ", data);
     io.to(room).emit("clearCanvas", data);
+}
+
+let names = {};
+
+function usersToClient(data) {
+    let roomSize = io.sockets.adapter.rooms.get(room).size;
+    console.log("usersToClient triggered in server", data);
+    if (!names[room]) {
+        names[room] = [];
+    }
+    names[room].push(data);
+    console.log("names.room: ", names[room]);
+    console.log("room: ", room);
+
+    let usersData = {
+        name: names[room],
+        roomSize: roomSize,
+    };
+    io.to(room).emit("namedUsers", usersData);
 }

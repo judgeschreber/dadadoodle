@@ -1,6 +1,7 @@
 html,
 body {
     height: 100%;
+    font-family: monospace;
 }
 
 body {
@@ -18,9 +19,16 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: black 1px solid;
+    margin: 10px;
     z-index: 1000;
     background-color: white;
+}
+
+.color-buttons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 150px;
 }
 
 .color-button {
@@ -49,8 +57,40 @@ body {
     background-color: yellow;
 }
 
+#black {
+    background-color: black;
+}
+#brown {
+    background-color: brown;
+}
+#grey {
+    background-color: grey;
+}
+#pink {
+    background-color: pink;
+}
+
+#white {
+    width: 28px;
+    height: 28px;
+    background-color: white;
+    border: 1px solid black;
+}
+
 #circle {
     border: 1px black solid;
+    border-radius: 50%;
+    background-color: lightgray;
+}
+
+#circle-outline {
+    background-color: lightgray;
+    border-radius: 50%;
+}
+
+#circle-width {
+    border: 1px black solid;
+    background-color: white;
     border-radius: 50%;
 }
 
@@ -76,10 +116,15 @@ body {
     top: 0px;
 }
 
-.invite-section {
+.invite-section-opendoodle {
     position: absolute;
-    top: 40px;
+    top: 10px;
     left: 10px;
+}
+
+.invite-section {
+    margin-top: 30px;
+    text-align: center;
 }
 
 .invite-field > p {
@@ -87,12 +132,13 @@ body {
 }
 
 .invite-button {
-    background-color: burlywood;
+    background-color: white;
     font-family: monospace;
     border: black 3px solid;
     border-radius: 10px;
     height: 30px;
     width: 200px;
+    visibility: hidden;
 }
 
 #users {
@@ -134,6 +180,21 @@ main {
     right: 50px;
 }
 
+.names {
+    height: 600px;
+    background-color: tomato;
+}
+
+#player1 {
+    position: absolute;
+    top: 0;
+}
+
+#player2 {
+    position: absolute;
+    bottom: 0;
+}
+
 .done-button {
     background-color: burlywood;
     font-family: monospace;
@@ -158,4 +219,65 @@ main {
     border-radius: 10px;
     height: 30px;
     width: 140px;
+}
+
+.modal {
+    background-color: rgba(185, 121, 121, 1);
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    z-index: 1000001;
+}
+
+.waiting-modal {
+    box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.8);
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    z-index: 1000001;
+}
+
+.modal-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: white;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background-color: white;
+}
+
+.waiting-modal-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 99999px rgba(185, 121, 121, 1);
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+#waiting {
+    background-color: hsl(90, 100%, 50%, 0%);
+    width: 100vw;
+    height: 100vh;
+    visibility: hidden;
+}
+
+#waiting-text {
+    color: white;
+    font-size: 60px;
 }

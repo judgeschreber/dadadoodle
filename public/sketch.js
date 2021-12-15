@@ -1,3 +1,11 @@
+let ec = false;
+const parsedUrl = new URL(window.location.href);
+console.log(parsedUrl);
+if (parsedUrl.pathname.startsWith("/ec")) {
+    ec = true;
+}
+
+let buttons = document.getElementsByClassName("buttons");
 let colorButton = document.getElementsByClassName("color-button");
 let linewidthButton = document.getElementsByClassName("linewidth-button");
 let inviteButton = document.getElementsByClassName("invite-button");
@@ -8,7 +16,22 @@ let numberOfDoodlers = document.querySelector("#number-of-doodlers");
 let coverTop = document.querySelector("#cover-top");
 let coverBottom = document.querySelector("#cover-bottom");
 let redoButton = document.querySelector("#redo");
+let circleWidthButton = document.querySelector("#circle-width");
 
+//Modal logic
+let modal = document.querySelector("#show-modal");
+let modalStartButton = document.querySelector("#modal-start-button");
+let waitingModal = document.querySelector("#waiting");
+
+let userName;
+if (ec) {
+    modalStartButton.addEventListener("click", () => {
+        console.log("name: ", document.querySelector("#name-field").value);
+        userName = document.querySelector("#name-field").value;
+        console.log("start button");
+        socket.emit("emitUserName", userName);
+    });
+}
 let lineButton = document.querySelector("#line");
 lineButton.addEventListener("click", () => {
     console.log("line button");
@@ -23,14 +46,15 @@ circleButton.addEventListener("click", () => {
     line = false;
 });
 
-let doneButton = document.getElementsByClassName("done-button");
+let circleOutlineButton = document.querySelector("#circle-outline");
+circleOutlineButton.addEventListener("click", () => {
+    console.log("circle outline button");
+    circle = true;
+    line = false;
+    circleOutline = !circleOutline;
+});
 
-let ec = false;
-const parsedUrl = new URL(window.location.href);
-console.log(parsedUrl);
-if (parsedUrl.pathname.startsWith("/ec")) {
-    ec = true;
-}
+let doneButton = document.getElementsByClassName("done-button");
 
 let canvas;
 const loadCanvas = () => {
@@ -46,7 +70,6 @@ const loadCanvas = () => {
         console.log("ec?: ", ec);
         ec = coverTop.style.left = canvas[0].offsetLeft;
         coverTop.style.top = canvas[0].offsetTop;
-
         coverBottom.style.left = canvas[0].offsetLeft;
         coverBottom.style.bottom = canvas[0].offsetTop;
     }
@@ -64,6 +87,10 @@ function showInvite() {
         inviteField[0].style.visibility = "hidden";
     }
 }
+
+if (!ec) {
+    inviteButton[0].style.visibility = "visible";
+}
 inviteButton[0].addEventListener("click", showInvite);
 
 function copy() {
@@ -80,6 +107,7 @@ colorButton.forEach((element) => {
 });
 
 let newUsers = [];
+
 function userJoined(data) {
     console.log(data.roomsize);
 
@@ -87,6 +115,9 @@ function userJoined(data) {
     newUsers.push(data.id);
 
     // set canvas covers, the first user has the longest array
+    if (ec && data.roomsize > 2 && newUsers.length == 1) {
+        window.location.replace("/");
+    }
     if (ec) {
         if (newUsers.length === 2) {
             console.log("newUsers before: ", newUsers);
@@ -101,6 +132,9 @@ function userJoined(data) {
             coverBottom.style.visibility = "hidden";
             doneButton[1].style.visibility = "visible";
             doneButton[0].style.visibility = "hidden";
+            if (data.roomsize === 1) {
+                inviteButton[0].style.visibility = "visible";
+            }
         }
     }
     console.log("userjoined triggered in client, ", newUsers);
@@ -109,6 +143,37 @@ function userJoined(data) {
             "beforeend",
             '<div id="new-user">New user joined</div>'
         );
+    }
+}
+
+let waiting = false;
+function namedUserJoined(data) {
+    console.log("named User joined: ", data);
+    console.log("waiting modal: ", waitingModal);
+    console.log("user name: ", userName);
+    let playerOne = document.querySelector("#player1");
+    let playerTwo = document.querySelector("#player2");
+    //if roomSize = 1 show waiting for other user screeen
+    if (data.name.length == 1 && data.name[0] == userName) {
+        modal.style.visibility = "hidden";
+        waitingModal.style.visibility = "visible";
+        inviteField[0].style.visibility = "hidden";
+        coverTop.style.visibility = "hidden";
+        buttons[0].style.visibility = "hidden";
+        waiting = true;
+    }
+    //if roomSize =2 start doodle
+    if (data.name.length == 2) {
+        console.log("modal: ", modal);
+
+        coverTop.style.visibility = "hidden";
+        modal.style.visibility = "hidden";
+        waitingModal.style.visibility = "hidden";
+        playerOne.innerHTML = data.name[0];
+        playerTwo.innerHTML = data.name[1];
+        inviteButton[0].style.visibility = "hidden";
+        clearCanvas();
+        waiting = false;
     }
 }
 
@@ -125,6 +190,8 @@ let strokeColor = "black";
 let sW = 2;
 let dotsArray;
 let newDotsArray;
+let circleWidth = 50;
+circleOutline = false;
 
 linewidthButton[0].addEventListener("click", function (event) {
     if (sW < 11) {
@@ -133,6 +200,17 @@ linewidthButton[0].addEventListener("click", function (event) {
         console.log("width: ", event.target.style.width);
     } else {
         sW = 1;
+    }
+});
+
+circleWidthButton.addEventListener("click", function (event) {
+    if (circleWidth < 50) {
+        circleWidth += 10;
+        event.target.style.width = `${circleWidth}px`;
+        event.target.style.height = `${circleWidth}px`;
+        console.log("width: ", event.target.style.width);
+    } else {
+        circleWidth = 10;
     }
 });
 
@@ -150,6 +228,7 @@ function setup() {
     socket.on("userLeft", userLeft);
     socket.on("userDone", userDone);
     socket.on("clearCanvas", clearCanvas);
+    socket.on("namedUsers", namedUserJoined);
 }
 
 function newDoodle(data) {
@@ -157,6 +236,7 @@ function newDoodle(data) {
     if (data.type == "line") {
         stroke(data.strokeColor);
         strokeWeight(data.strokeWeight);
+        noFill();
         beginShape();
 
         newDotsArray.forEach((element) => {
@@ -170,32 +250,44 @@ function newDoodle(data) {
         newDotsArray.push(dot);
         endShape();
     } else if (data.type == "circle") {
+        beginShape();
         fill(data.strokeColor);
-        ellipse(data.x, data.y, 50, 50);
+        if (data.circleOutline) {
+            stroke("black");
+            ellipse(data.x, data.y, data.circleWidth, data.circleWidth);
+            endShape();
+        } else {
+            console.log("new doodle stroke black: ", data.strokeColor);
+            stroke(data.strokeColor);
+            ellipse(data.x, data.y, data.circleWidth, data.circleWidth);
+        }
     }
+    endShape();
 }
 
 let lineArray = [];
 
 function draw() {
-    strokeWeight(2);
-    stroke("black");
+    if (waiting) {
+        strokeWeight(10);
+        stroke("black");
 
-    beginShape();
-    lineArray.forEach((dot) => {
-        curveVertex(dot.x, dot.y);
-    });
+        beginShape();
+        lineArray.forEach((dot) => {
+            curveVertex(dot.x, dot.y);
+        });
 
-    let dot = {
-        x: Math.floor(random(width)),
-        y: Math.floor(random(height)),
-    };
+        let dot = {
+            x: Math.floor(random(width)),
+            y: Math.floor(random(height)),
+        };
 
-    lineArray.push(dot);
-    endShape();
+        lineArray.push(dot);
+        endShape();
 
-    frameRate(4);
-    console.log("line array: ", lineArray);
+        frameRate(20);
+        console.log("line array: ", lineArray);
+    }
 }
 
 let drawing = true;
@@ -225,18 +317,19 @@ function otherMouseReleased(data) {
     }
 }
 
+let doneButtonActive = true;
 doneButton.forEach((element) => {
-    element.addEventListener(
-        "click",
-        (e) => {
-            console.log("done button clicked");
-            e.target.style["background-color"] = "red";
-            drawing = false;
-            socket.emit("done", "pressed done");
-        },
-        { once: true }
-    );
+    element.addEventListener("click", clickDoneButton);
 });
+
+function clickDoneButton(e) {
+    console.log("done button clicked");
+    e.target.style["background-color"] = "red";
+    if (doneButtonActive) {
+        socket.emit("done", "pressed done");
+    }
+    doneButtonActive = false;
+}
 
 let doneArray = [];
 function userDone(data) {
@@ -247,11 +340,12 @@ function userDone(data) {
         coverBottom.style.visibility = "hidden";
     }
 }
-
-redoButton.addEventListener("click", function () {
-    console.log("redoButton triggered");
-    socket.emit("clear", "clear canvas");
-});
+if (ec) {
+    redoButton.addEventListener("click", function () {
+        console.log("redoButton triggered");
+        socket.emit("clear", "clear canvas");
+    });
+}
 
 function clearCanvas() {
     console.log("clear canvas in client");
@@ -274,6 +368,7 @@ function clearCanvas() {
     doneButton.forEach((element) => {
         element.style["background-color"] = "burlywood";
     });
+    doneButtonActive = true;
     drawing = true;
 }
 
@@ -357,18 +452,28 @@ function drawCircle() {
             x: mouseX,
             y: mouseY,
             strokeColor: strokeColor,
+            circleWidth: circleWidth,
+            circleOutline: circleOutline,
+            strokeColor: strokeColor,
             type: "circle",
         };
 
         socket.emit("mouse", data);
         beginShape();
 
+        console.log("circleWidth: ", circleWidth);
         let circle = {};
         circle.x = mouseX;
         circle.y = mouseY;
+
         fill(strokeColor);
-        stroke(strokeColor);
-        ellipse(mouseX, mouseY, 50, 50);
+        console.log("stroke: ", stroke);
+        if (circleOutline) {
+            stroke("black");
+        } else {
+            stroke(strokeColor);
+        }
+        ellipse(mouseX, mouseY, circleWidth, circleWidth);
 
         endShape();
     } else {
