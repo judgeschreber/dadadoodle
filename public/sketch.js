@@ -176,7 +176,7 @@ function namedUserJoined(data) {
     let playerOne = document.querySelector("#player1");
     let playerTwo = document.querySelector("#player2");
     //if roomSize = 1 show waiting for other user screeen
-    if (data.name.length == 1 && data.name[0] == userName) {
+    if (data.name.length == 1 && data.name[0].startsWith(userName)) {
         modal.style.visibility = "hidden";
         waitingModal.style.visibility = "visible";
         coverTop.style.visibility = "hidden";
