@@ -268,7 +268,7 @@ function setup() {
 }
 
 function newDoodle(data) {
-    console.log("data type: ", data.type);
+    console.log("new Doodle data type: ", data.type);
     if (data.type == "line") {
         stroke(data.strokeColor);
         strokeWeight(data.strokeWeight);

@@ -60,7 +60,6 @@ const io = require("socket.io")(server, {
 
 //const io = socket(server);
 io.on("connection", (socket) => {
-    console.lo;
     socket.join(room);
     newConnection(socket);
     showNewUser(socket.id);
@@ -78,19 +77,21 @@ io.on("connection", (socket) => {
 function newConnection(socket) {
     console.log("new connection: ", socket.id);
     console.log("randomUrl ", randomUrl);
-    socket.on("mouse", mouseEmit);
-    socket.on("mouseoff", mouseEmit);
+    socket.on("mouse", (data) => {
+        console.log("mouseEmit triggered: ", data);
+
+        socket.to(room).emit("mouse", data);
+        socket.to(room).emit("mouseoff", data);
+    });
+    socket.on("mouseoff", (data) => {
+        console.log("mouseEmit triggered: ", data);
+
+        socket.to(room).emit("mouse", data);
+        socket.to(room).emit("mouseoff", data);
+    });
     socket.on("done", doneClick);
     socket.on("clear", clearCanvas);
     socket.on("emitUserName", usersToClient);
-}
-
-function mouseEmit(data) {
-    console.log("mouseEmit triggered: ", data);
-
-    io.to(room).emit("mouse", data);
-
-    io.to(room).emit("mouseoff", data);
 }
 
 function showNewUser(id) {
