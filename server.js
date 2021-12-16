@@ -1,6 +1,14 @@
 const express = require("express");
 const app = express();
-const socket = require("socket.io");
+const socket = require("socket.io")(server, {
+    allowRequest: (req, callback) =>
+        callback(
+            null,
+            req.headers.referer.startsWith(
+                "http://localhost:3000" || "https://dadadoodle.herokuapp.com"
+            )
+        ),
+});
 const artists = require("./artists.js");
 console.log(artists);
 app.use(express.static("./public"));
@@ -47,6 +55,7 @@ const server = app.listen(process.env.PORT || 3000);
 
 const io = socket(server);
 io.on("connection", (socket) => {
+    console.lo;
     socket.join(room);
     newConnection(socket);
     showNewUser(socket.id);
