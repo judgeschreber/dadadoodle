@@ -1,16 +1,29 @@
 <div class="buttons">
-    <div id="line" class="line-button"></div>
-    <div id="circle" class="circle-button"></div>
-    <div id="circle-outline" class="circle-button"></div>
-    <div id="black" class="color-button"></div>
-    <div id="white" class="color-button"></div>
-    <div id="red" class="color-button"></div>
-    <div id="green" class="color-button"></div>
-    <div id="blue" class="color-button"></div>
-    <div id="yellow" class="color-button"></div>
-    <div id="line-width" class="linewidth-button"></div>
-    <div id="circle-width" class="circle-button"></div>
-
+    <p id="color-text">color</p>
+    <div class="color-buttons">
+        <div id="black" class="color-button"></div>
+        <div id="white" class="color-button"></div>
+        <div id="red" class="color-button"></div>
+        <div id="green" class="color-button"></div>
+        <div id="blue" class="color-button"></div>
+        <div id="yellow" class="color-button"></div>
+        <div id="brown" class="color-button"></div>
+        <div id="grey" class="color-button"></div>
+        <div id="pink" class="color-button"></div>
+    </div>
+    <p id="shape-text">shape</p>
+    <div class="shape-buttons">
+        <div id="line" class="line-button"></div>
+        <div id="circle" class="circle-button"></div>
+        <div id="circle-outline" class="circle-button"></div>
+    </div>
+    <p>width</p>
+    <div class="width-buttons">
+        <div id="line-width-container">
+            <div id="line-width" class="linewidth-button"></div>
+        </div>
+        <div id="circle-width" class="circle-button"></div>
+    </div>
 </div>
 
 <div id="users">
@@ -30,7 +43,7 @@
     <p id="player2">player 2</p>
 </div>
 
-<div class="after-draw-buttons">
+<div id="after-draw-buttons">
     <button id="redo">start over</button>
 </div>
 
@@ -39,7 +52,7 @@
         <h2>Choose a name and join the doodle</h2>
         <input id="name-field" type="text" />
         <button id="modal-start-button">Start</button>
-        <div class="invite-section">
+        <div id="invite-section">
             <button class="invite-button">
                 Invite Friends
             </button>
@@ -56,6 +69,17 @@
 <div class="waiting-modal" id="waiting">
     <div class="waiting-modal-center">
         <h2 id="waiting-text">Waiting</h2>
+        <div id="invite-section">
+            <button class="invite-button">
+                Invite Friends
+            </button>
+
+            <div class="invite-field">
+                <p>Copy this link and send to your doodle partner</p>
+                <input id="input" type="text" value={{url}} />
+                <button id="copy">Copy</button>
+            </div>
+        </div>
     </div>
 
 </div>

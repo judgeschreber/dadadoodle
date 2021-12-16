@@ -7,7 +7,7 @@ if (parsedUrl.pathname.startsWith("/ec")) {
 
 let buttons = document.getElementsByClassName("buttons");
 let colorButton = document.getElementsByClassName("color-button");
-let linewidthButton = document.getElementsByClassName("linewidth-button");
+
 let inviteButton = document.getElementsByClassName("invite-button");
 let inviteField = document.getElementsByClassName("invite-field");
 let copyText = document.querySelector("#input");
@@ -17,6 +17,8 @@ let coverTop = document.querySelector("#cover-top");
 let coverBottom = document.querySelector("#cover-bottom");
 let redoButton = document.querySelector("#redo");
 let circleWidthButton = document.querySelector("#circle-width");
+let inviteSection = document.querySelector("#invite-section");
+let colorText = document.querySelector("#color-text");
 
 //Modal logic
 let modal = document.querySelector("#show-modal");
@@ -32,9 +34,12 @@ if (ec) {
         socket.emit("emitUserName", userName);
     });
 }
+
+let shapeText = document.querySelector("#shape-text");
 let lineButton = document.querySelector("#line");
 lineButton.addEventListener("click", () => {
     console.log("line button");
+    shapeText.innerHTML = "line";
     circle = false;
     line = true;
 });
@@ -42,6 +47,7 @@ lineButton.addEventListener("click", () => {
 let circleButton = document.querySelector("#circle");
 circleButton.addEventListener("click", () => {
     console.log("circle button");
+    shapeText.innerHTML = "circle";
     circle = true;
     line = false;
 });
@@ -51,6 +57,11 @@ circleOutlineButton.addEventListener("click", () => {
     console.log("circle outline button");
     circle = true;
     line = false;
+    if (circleOutline) {
+        circleOutlineButton.style.border = "none";
+    } else {
+        circleOutlineButton.style.border = "1px solid black";
+    }
     circleOutline = !circleOutline;
 });
 
@@ -103,6 +114,13 @@ colorButton.forEach((element) => {
     element.addEventListener("click", function (event) {
         console.log("click", event.target.id);
         strokeColor = event.target.id;
+        if (event.target.id == "white") {
+            colorText.style.color = "black";
+            colorText.innerHTML = "white";
+        } else {
+            colorText.style.color = event.target.id;
+            colorText.innerHTML = event.target.id;
+        }
     });
 });
 
@@ -147,6 +165,7 @@ function userJoined(data) {
 }
 
 let waiting = false;
+let userNameArray;
 function namedUserJoined(data) {
     console.log("named User joined: ", data);
     console.log("waiting modal: ", waitingModal);
@@ -157,13 +176,14 @@ function namedUserJoined(data) {
     if (data.name.length == 1 && data.name[0] == userName) {
         modal.style.visibility = "hidden";
         waitingModal.style.visibility = "visible";
-        inviteField[0].style.visibility = "hidden";
         coverTop.style.visibility = "hidden";
+        coverBottom.style.visibility = "hidden";
         buttons[0].style.visibility = "hidden";
         waiting = true;
     }
     //if roomSize =2 start doodle
     if (data.name.length == 2) {
+        userNameArray = data.name;
         console.log("modal: ", modal);
 
         coverTop.style.visibility = "hidden";
@@ -172,6 +192,8 @@ function namedUserJoined(data) {
         playerOne.innerHTML = data.name[0];
         playerTwo.innerHTML = data.name[1];
         inviteButton[0].style.visibility = "hidden";
+        buttons[0].style.visibility = "visible";
+        inviteField[0].style.visibility = "hidden";
         clearCanvas();
         waiting = false;
     }
@@ -193,13 +215,17 @@ let newDotsArray;
 let circleWidth = 50;
 circleOutline = false;
 
-linewidthButton[0].addEventListener("click", function (event) {
+let linewidthButton = document.querySelector("#line-width-container");
+let lineWidth = document.querySelector("#line-width");
+linewidthButton.addEventListener("click", function (event) {
+    console.log("lineWidthButton");
     if (sW < 11) {
         sW++;
-        event.target.style.width = `${sW}px`;
+        lineWidth.style.width = `${sW}px`;
         console.log("width: ", event.target.style.width);
     } else {
         sW = 1;
+        lineWidth.style.width = `${sW}px`;
     }
 });
 
@@ -211,6 +237,8 @@ circleWidthButton.addEventListener("click", function (event) {
         console.log("width: ", event.target.style.width);
     } else {
         circleWidth = 10;
+        event.target.style.width = `${circleWidth}px`;
+        event.target.style.height = `${circleWidth}px`;
     }
 });
 
@@ -253,6 +281,7 @@ function newDoodle(data) {
         beginShape();
         fill(data.strokeColor);
         if (data.circleOutline) {
+            strokeWeight(data.strokeWeight);
             stroke("black");
             ellipse(data.x, data.y, data.circleWidth, data.circleWidth);
             endShape();
@@ -285,7 +314,7 @@ function draw() {
         lineArray.push(dot);
         endShape();
 
-        frameRate(20);
+        frameRate(1);
         console.log("line array: ", lineArray);
     }
 }
@@ -332,12 +361,14 @@ function clickDoneButton(e) {
 }
 
 let doneArray = [];
+let afterDrawButtons = document.querySelector("#after-draw-buttons");
 function userDone(data) {
     doneArray.push(data);
     console.log("userDone in client: ", doneArray);
     if (doneArray.length === 2) {
         coverTop.style.visibility = "hidden";
         coverBottom.style.visibility = "hidden";
+        afterDrawButtons.style.visibility = "visible";
     }
 }
 if (ec) {
@@ -350,6 +381,7 @@ if (ec) {
 function clearCanvas() {
     console.log("clear canvas in client");
     clear();
+    afterDrawButtons.style.visibility = "hidden";
     doneArray = [];
     if (newUsers.length === 2) {
         console.log("newUsers before: ", newUsers);
@@ -374,13 +406,13 @@ function clearCanvas() {
 
 function drawLine() {
     if (ec && newUsers.length == 2) {
-        if (mouseY < 300) {
+        if (mouseY < 310) {
             drawing = true;
         } else {
             drawing = false;
         }
     } else if (ec && newUsers.length == 1) {
-        if (mouseY > 300) {
+        if (mouseY > 290) {
             drawing = true;
         } else {
             drawing = false;
@@ -427,13 +459,13 @@ function drawLine() {
 
 function drawCircle() {
     if (ec && newUsers.length == 2) {
-        if (mouseY < 300) {
+        if (mouseY < 310) {
             drawing = true;
         } else {
             drawing = false;
         }
     } else if (ec && newUsers.length == 1) {
-        if (mouseY > 300) {
+        if (mouseY > 290) {
             drawing = true;
         } else {
             drawing = false;
@@ -455,6 +487,7 @@ function drawCircle() {
             circleWidth: circleWidth,
             circleOutline: circleOutline,
             strokeColor: strokeColor,
+            strokeWeight: sW,
             type: "circle",
         };
 
@@ -470,6 +503,7 @@ function drawCircle() {
         console.log("stroke: ", stroke);
         if (circleOutline) {
             stroke("black");
+            strokeWeight(sW);
         } else {
             stroke(strokeColor);
         }

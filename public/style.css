@@ -16,10 +16,12 @@ body {
 }
 
 .buttons {
+    position: fixed;
+    left: 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 10px;
+    margin: 20px;
     z-index: 1000;
     background-color: white;
 }
@@ -31,14 +33,23 @@ body {
     max-width: 150px;
 }
 
+.shape-buttons,
+.width-buttons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 150px;
+    align-items: center;
+}
+
 .color-button {
     width: 30px;
     height: 30px;
     margin: 10px;
 }
 .circle-button {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     margin: 10px;
 }
 #red {
@@ -78,7 +89,6 @@ body {
 }
 
 #circle {
-    border: 1px black solid;
     border-radius: 50%;
     background-color: lightgray;
 }
@@ -94,11 +104,21 @@ body {
     border-radius: 50%;
 }
 
+#line-width-container {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border: 1px solid black;
+}
+
 .linewidth-button {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 2px;
     height: 30px;
     background: black;
-    margin: 10px;
 }
 
 .line-button {
@@ -122,7 +142,7 @@ body {
     left: 10px;
 }
 
-.invite-section {
+#invite-section {
     margin-top: 30px;
     text-align: center;
 }
@@ -158,7 +178,7 @@ main {
 #cover-top {
     width: 600px;
     height: 280px;
-    background-color: blue;
+    background-color: black;
     position: absolute;
     z-index: 100000;
 }
@@ -166,9 +186,10 @@ main {
 #cover-bottom {
     width: 600px;
     height: 280px;
-    background-color: red;
+    background-color: black;
     position: absolute;
     z-index: 100000;
+    transform: translateY(3px);
 }
 
 .done-doodling {
@@ -204,12 +225,13 @@ main {
     width: 140px;
 }
 
-.after-draw-buttons {
+#after-draw-buttons {
     position: absolute;
     width: 100vw;
     display: flex;
     justify-content: space-around;
     bottom: 10px;
+    visibility: hidden;
 }
 
 .redo-button {

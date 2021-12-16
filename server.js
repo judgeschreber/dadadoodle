@@ -88,13 +88,15 @@ function showNewUser(id) {
 }
 
 function userLeft(id) {
-    let allIds = io.sockets.adapter.rooms.get(room).size;
-    console.log("user left: ", allIds);
-    data = {
-        id: id,
-        roomsize: (allIds -= 1),
-    };
-    io.to(room).emit("userLeft", data);
+    if (room) {
+        let allIds = io.sockets.adapter.rooms.get(room).size;
+        console.log("user left: ", allIds);
+        data = {
+            id: id,
+            roomsize: (allIds -= 1),
+        };
+        io.to(room).emit("userLeft", data);
+    }
 }
 
 function doneClick(data) {
