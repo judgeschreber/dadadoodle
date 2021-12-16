@@ -1,7 +1,15 @@
-{{#if url}}<a href="/doodle/{{url}}">
-        <h2 class="start-button">start doodling</h2>
-    </a>{{/if}}
+<div id="start-buttons">
+    {{#if url}}
+        <div class="start-button-container">
+            <a class="start-button" href="/doodle/{{url}}">
+                <h2 class="start-button">free doodle</h2>
+            </a>
+        </div>{{/if}}
 
-{{#if url}}<a href="/ec/{{url}}">
-        <h2 class="start-button">exquisite corpse</h2>
-    </a>{{/if}}
+    {{#if url}}
+        <div class="start-button-container">
+            <a class="start-button" href="/ec/{{url}}">
+                <h2 class="start-button">dada doodle</h2>
+            </a>
+        </div>{{/if}}
+</div>

@@ -161,6 +161,9 @@ function userJoined(data) {
             "beforeend",
             '<div id="new-user">New user joined</div>'
         );
+        setTimeout(() => {
+            newUser.removeChild(newUser.lastChild);
+        }, 3000);
     }
 }
 
@@ -206,6 +209,9 @@ function userLeft(data) {
         "beforeend",
         '<div id="new-user">User left the doodle</div>'
     );
+    setTimeout(() => {
+        newUser.removeChild(newUser.lastChild);
+    }, 3000);
 }
 
 let strokeColor = "black";
@@ -298,6 +304,7 @@ let lineArray = [];
 
 function draw() {
     if (waiting) {
+        inviteButton[0].style.visibility = "hidden";
         strokeWeight(10);
         stroke("black");
 
@@ -314,7 +321,7 @@ function draw() {
         lineArray.push(dot);
         endShape();
 
-        frameRate(1);
+        frameRate(10);
         console.log("line array: ", lineArray);
     }
 }

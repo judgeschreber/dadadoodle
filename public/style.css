@@ -4,14 +4,34 @@ body {
     font-family: monospace;
 }
 
+button:hover {
+    cursor: pointer;
+}
+
+#start-buttons {
+    width: 50vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.start-button {
+    text-decoration: none;
+}
+
+.start-button:hover {
+    border: 3px solid black;
+    border-radius: 5px;
+}
+
+.start-button > h2 {
+    color: black;
+}
+
 body {
     margin: 0;
     display: flex;
-
-    /* This centers our sketch horizontally. */
     justify-content: center;
-
-    /* This centers our sketch vertically. */
     align-items: center;
 }
 
@@ -163,7 +183,7 @@ body {
 
 #users {
     position: absolute;
-    top: 40px;
+    top: 10px;
     right: 10px;
 }
 
@@ -302,4 +322,20 @@ main {
 #waiting-text {
     color: white;
     font-size: 60px;
+}
+
+@media (max-width: 1050px) {
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        width: 100vw;
+        bottom: 0px;
+        margin: 0px;
+        justify-content: space-between;
+        left: 0px;
+    }
+
+    .color-buttons {
+        max-width: 50vw;
+    }
 }

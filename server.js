@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const socket = require("socket.io");
+const artists = require("./artists.js");
+console.log(artists);
 app.use(express.static("./public"));
 
 const { v4: uuidv4 } = require("uuid");
@@ -41,7 +43,7 @@ app.get("/ec/*", (req, res) => {
     });
 });
 
-const server = app.listen(3000);
+const server = app.listen(process.env.PORT || 3000);
 
 const io = socket(server);
 io.on("connection", (socket) => {
@@ -51,7 +53,7 @@ io.on("connection", (socket) => {
     socket.on("disconnecting", () => {
         console.log("disconnect!", socket.rooms);
         for (const room of socket.rooms) {
-            if (room !== socket.id) {
+            if (room && room !== socket.id) {
                 console.log("in if statement");
                 userLeft(socket.id);
             }
@@ -119,7 +121,12 @@ function usersToClient(data) {
     if (!names[room]) {
         names[room] = [];
     }
-    names[room].push(data);
+    let artsyName;
+    artsyName = `${data}${
+        artists.first[Math.floor(Math.random() * artists.first.length)]
+    } ${artists.last[Math.floor(Math.random() * artists.last.length)]}`;
+    console.log("artsyName = ", artsyName);
+    names[room].push(artsyName);
     console.log("names.room: ", names[room]);
     console.log("room: ", room);
 
