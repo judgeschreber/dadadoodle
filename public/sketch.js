@@ -278,11 +278,11 @@ function newDoodle(data) {
             curveVertex(element.x, element.y);
         });
 
-        var dot = {};
-        dot.x = data.x;
-        dot.y = data.y;
+        let newDot = {};
+        newDot.x = data.x;
+        newDot.y = data.y;
 
-        newDotsArray.push(dot);
+        newDotsArray.push(newDot);
         endShape();
     } else if (data.type == "circle") {
         beginShape();
@@ -314,12 +314,12 @@ function draw() {
             curveVertex(dot.x, dot.y);
         });
 
-        let dot = {
+        let randomDot = {
             x: Math.floor(random(width)),
             y: Math.floor(random(height)),
         };
 
-        lineArray.push(dot);
+        lineArray.push(randomDot);
         endShape();
 
         frameRate(10);
@@ -453,7 +453,7 @@ function drawLine() {
             curveVertex(element.x, element.y);
         });
 
-        var dot = {};
+        let dot = {};
         dot.x = mouseX;
         dot.y = mouseY;
 
