@@ -45,6 +45,7 @@ app.get("/ec/*", (req, res) => {
 
 const server = app.listen(process.env.PORT || 3000);
 const io = require("socket.io")(server, {
+    allowEIO3: true,
     allowRequest: (req, callback) =>
         callback(
             null,
