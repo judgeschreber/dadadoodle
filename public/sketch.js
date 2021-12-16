@@ -255,9 +255,7 @@ function setup() {
     dotsArray = [];
     newDotsArray = [];
 
-    socket = io.connect(
-        "http://localhost:3000" || `${location.protocol}//${location.host}`
-    );
+    socket = io.connect(`${location.protocol}//${location.host}`);
     socket.on("mouse", newDoodle);
     socket.on("mouseoff", otherMouseReleased);
     socket.on("userJoined", userJoined);
