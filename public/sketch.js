@@ -296,9 +296,9 @@ function newDoodle(data) {
             console.log("new doodle stroke black: ", data.strokeColor);
             stroke(data.strokeColor);
             ellipse(data.x, data.y, data.circleWidth, data.circleWidth);
+            endShape();
         }
     }
-    endShape();
 }
 
 let lineArray = [];
