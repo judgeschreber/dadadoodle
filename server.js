@@ -27,8 +27,10 @@ app.get("/", (req, res) => {
 });
 
 let room;
+let ec;
 app.get("/doodle/*", (req, res) => {
     room = req.params[0];
+    ec = false;
     console.log("req.params = ", req.params[0]);
     res.render("doodle", {
         url: `http://localhost:3000/doodle/${room}`,
@@ -37,6 +39,7 @@ app.get("/doodle/*", (req, res) => {
 
 app.get("/ec/*", (req, res) => {
     room = req.params[0];
+    ec = true;
     console.log("req.params = ", req.params[0]);
     res.render("ec", {
         url: `http://localhost:3000/ec/${room}`,
@@ -92,12 +95,23 @@ function mouseEmit(data) {
 
 function showNewUser(id) {
     let allIds = io.sockets.adapter.rooms.get(room).size;
-    console.log("roomsize", allIds);
-    data = {
-        id: id,
-        roomsize: allIds,
-    };
-    io.to(room).emit("userJoined", data);
+    if (ec) {
+        if (allIds < 3) {
+            console.log("if ec: roomsize", allIds);
+            data = {
+                id: id,
+                roomsize: allIds,
+            };
+            io.to(room).emit("userJoined", data);
+        }
+    } else {
+        console.log("if ec: roomsize", allIds);
+        data = {
+            id: id,
+            roomsize: allIds,
+        };
+        io.to(room).emit("userJoined", data);
+    }
 }
 
 function userLeft(id) {

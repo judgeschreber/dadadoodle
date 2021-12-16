@@ -130,6 +130,7 @@ function userJoined(data) {
     console.log(data.roomsize);
 
     numberOfDoodlers.innerHTML = `Number of Doodlers: ${data.roomsize}`;
+
     newUsers.push(data.id);
 
     // set canvas covers, the first user has the longest array
