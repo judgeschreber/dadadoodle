@@ -270,6 +270,7 @@ circleWidthButton.addEventListener("click", function (event) {
 function setup() {
     createCanvas(600, 600);
 
+    background("white");
     noFill();
     dotsArray = [];
     newDotsArray = [];

@@ -33,7 +33,7 @@ app.get("/doodle/*", (req, res) => {
     ec = false;
     console.log("req.params = ", req.params[0]);
     res.render("doodle", {
-        url: `http://localhost:3000/doodle/${room}`,
+        url: `https://dadadoodle.herokuapp.com/doodle/${room}`,
     });
 });
 
@@ -42,7 +42,7 @@ app.get("/ec/*", (req, res) => {
     ec = true;
     console.log("req.params = ", req.params[0]);
     res.render("ec", {
-        url: `http://localhost:3000/ec/${room}`,
+        url: `https://dadadoodle.herokuapp.com/ec/${room}`,
     });
 });
 

@@ -218,7 +218,7 @@ main {
     flex-direction: column;
     height: 100vh;
     justify-content: space-around;
-    right: 50px;
+    right: 20px;
 }
 
 .names {
@@ -337,5 +337,24 @@ main {
 
     .color-buttons {
         max-width: 50vw;
+    }
+
+    .done-doodling {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        justify-content: space-around;
+        right: 5px;
+    }
+
+    .done-button {
+        background-color: burlywood;
+        font-family: monospace;
+        border: black 3px solid;
+        border-radius: 10px;
+        height: 60px;
+        width: 90px;
+        font-size: 12px;
     }
 }
