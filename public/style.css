@@ -26,6 +26,7 @@ button:hover {
 
 .start-button > h2 {
     color: black;
+    padding: 5px;
 }
 
 body {
