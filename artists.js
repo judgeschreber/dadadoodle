@@ -11,6 +11,7 @@ module.exports = {
         "-Michel",
         " El",
         " de",
+        " di",
     ],
     last: [
         "Rothko",
@@ -22,5 +23,8 @@ module.exports = {
         "van Gogh",
         "da Vinci",
         "Vermeer",
+        "Basquiat",
+        "Bosch",
+        "Dali",
     ],
 };

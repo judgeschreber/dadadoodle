@@ -142,7 +142,7 @@ function userJoined(data) {
         if (newUsers.length === 2) {
             console.log("newUsers before: ", newUsers);
             coverTop.style.visibility = "hidden";
-            coverBottom.style.visibility = "visible";
+            coverBottom.style.visibility = "hidden";
             doneButton[0].style.visibility = "visible";
             doneButton[1].style.visibility = "hidden";
         }
@@ -192,6 +192,7 @@ function namedUserJoined(data) {
         console.log("modal: ", modal);
 
         coverTop.style.visibility = "hidden";
+        coverTop.style.visibility = "visible";
         modal.style.visibility = "hidden";
         waitingModal.style.visibility = "hidden";
         playerOne.innerHTML = data.name[0];
