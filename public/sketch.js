@@ -44,10 +44,13 @@ lineButton.addEventListener("click", () => {
     line = true;
 });
 
+let crazyCircle = false;
 let circleButton = document.querySelector("#circle");
 circleButton.addEventListener("click", () => {
     console.log("circle button");
-    shapeText.innerHTML = "circle";
+    if (!crazyCircle) {
+        shapeText.innerHTML = "circle";
+    }
     circle = true;
     line = false;
 });
@@ -60,9 +63,11 @@ circleOutlineButton.addEventListener("click", () => {
     if (circleOutline) {
         circleOutlineButton.style.border = "none";
         shapeText.innerHTML = "circle";
+        crazyCircle = false;
     } else {
         circleOutlineButton.style.border = "1px solid black";
         shapeText.innerHTML = "crazy circle";
+        crazyCircle = true;
     }
     circleOutline = !circleOutline;
 });
