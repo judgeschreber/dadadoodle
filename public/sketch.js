@@ -59,6 +59,7 @@ circleOutlineButton.addEventListener("click", () => {
     line = false;
     if (circleOutline) {
         circleOutlineButton.style.border = "none";
+        shapeText.innerHTML = "circle";
     } else {
         circleOutlineButton.style.border = "1px solid black";
         shapeText.innerHTML = "crazy circle";
@@ -127,12 +128,19 @@ colorButton.forEach((element) => {
 
 let newUsers = [];
 
+if (!ec) {
+    redoButton.style.visibility = "hidden";
+}
+
 function userJoined(data) {
     console.log(data.roomsize);
 
     numberOfDoodlers.innerHTML = `Number of Doodlers: ${data.roomsize}`;
 
     newUsers.push(data.id);
+    if (data.roomsize == newUsers.length) {
+        redoButton.style.visibility = "visible";
+    }
 
     // set canvas covers, the first user has the longest array
     if (ec && data.roomsize > 2 && newUsers.length == 1) {
@@ -273,6 +281,7 @@ function setup() {
     socket.on("userLeft", userLeft);
     socket.on("userDone", userDone);
     socket.on("clearCanvas", clearCanvas);
+    socket.on("clearFree", clearFree);
     socket.on("namedUsers", namedUserJoined);
     socket.on("roomFull", roomFull);
 }
@@ -390,11 +399,18 @@ function userDone(data) {
         afterDrawButtons.style.visibility = "visible";
     }
 }
-if (ec) {
-    redoButton.addEventListener("click", function () {
-        console.log("redoButton triggered");
+
+redoButton.addEventListener("click", function () {
+    console.log("redoButton triggered");
+    if (ec) {
         socket.emit("clear", "clear canvas");
-    });
+    } else {
+        socket.emit("clearFree", "clear canvas");
+    }
+});
+
+function clearFree() {
+    clear();
 }
 
 function clearCanvas() {

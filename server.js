@@ -98,6 +98,7 @@ function newConnection(socket) {
     });
     socket.on("done", doneClick);
     socket.on("clear", clearCanvas);
+    socket.on("clearFree", clearFree);
     socket.on("emitUserName", usersToClient);
 }
 
@@ -138,6 +139,11 @@ function doneClick(data) {
 function clearCanvas(data) {
     console.log("clearCanvas in server: ", data);
     io.to(room).emit("clearCanvas", data);
+}
+
+function clearFree(data) {
+    console.log("clearCanvas in server: ", data);
+    io.to(room).emit("clearFree", data);
 }
 
 let names = {};
