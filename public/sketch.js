@@ -61,6 +61,7 @@ circleOutlineButton.addEventListener("click", () => {
         circleOutlineButton.style.border = "none";
     } else {
         circleOutlineButton.style.border = "1px solid black";
+        shapeText.innerHTML = "crazy circle";
     }
     circleOutline = !circleOutline;
 });
@@ -135,7 +136,7 @@ function userJoined(data) {
 
     // set canvas covers, the first user has the longest array
     if (ec && data.roomsize > 2 && newUsers.length == 1) {
-        console.log("too many users joined");
+        console.log("too many users joined: ");
         window.location.replace("/");
     }
     if (ec) {
@@ -166,6 +167,13 @@ function userJoined(data) {
         setTimeout(() => {
             newUser.removeChild(newUser.lastChild);
         }, 3000);
+    }
+}
+
+function roomFull(data) {
+    if (newUsers.length < 1) {
+        console.log("too many users joined: ");
+        window.location.replace("/");
     }
 }
 
@@ -266,6 +274,7 @@ function setup() {
     socket.on("userDone", userDone);
     socket.on("clearCanvas", clearCanvas);
     socket.on("namedUsers", namedUserJoined);
+    socket.on("roomFull", roomFull);
 }
 
 function newDoodle(data) {

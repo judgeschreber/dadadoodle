@@ -61,6 +61,7 @@ const io = require("socket.io")(server, {
 //const io = socket(server);
 io.on("connection", (socket) => {
     socket.join(room);
+    roomFull(socket);
     newConnection(socket);
     showNewUser(socket.id);
     socket.on("disconnecting", () => {
@@ -73,6 +74,12 @@ io.on("connection", (socket) => {
         }
     });
 });
+
+function roomFull(socket) {
+    if (ec && io.sockets.adapter.rooms.get(room).size > 2) {
+        socket.emit("roomFull", "this room is full");
+    }
+}
 
 function newConnection(socket) {
     console.log("new connection: ", socket.id);
@@ -96,23 +103,17 @@ function newConnection(socket) {
 
 function showNewUser(id) {
     let allIds = io.sockets.adapter.rooms.get(room).size;
-    if (ec) {
-        if (allIds < 3) {
-            console.log("if ec: roomsize", allIds);
-            data = {
-                id: id,
-                roomsize: allIds,
-            };
-            io.to(room).emit("userJoined", data);
-        }
-    } else {
-        console.log("if ec: roomsize", allIds);
-        data = {
-            id: id,
-            roomsize: allIds,
-        };
-        io.to(room).emit("userJoined", data);
+
+    if (ec && allIds > 2) {
+        return;
     }
+
+    console.log("if ec: roomsize", allIds);
+    data = {
+        id: id,
+        roomsize: allIds,
+    };
+    io.to(room).emit("userJoined", data);
 }
 
 function userLeft(id) {
