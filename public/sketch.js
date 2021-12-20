@@ -148,6 +148,11 @@ function userJoined(data) {
     }
 
     // set canvas covers, the first user has the longest array
+
+    if (ec && data.roomsize === 1) {
+        console.log("too many users joined: ");
+        inviteButton[0].style.visibility = "visible";
+    }
     if (ec && data.roomsize > 2 && newUsers.length == 1) {
         console.log("too many users joined: ");
         window.location.replace("/");
