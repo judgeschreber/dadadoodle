@@ -152,25 +152,6 @@ function userJoined(data) {
         console.log("too many users joined: ");
         window.location.replace("/");
     }
-    if (ec) {
-        if (newUsers.length === 2) {
-            console.log("newUsers before: ", newUsers);
-            coverTop.style.visibility = "hidden";
-            coverBottom.style.visibility = "hidden";
-            doneButton[0].style.visibility = "visible";
-            doneButton[1].style.visibility = "hidden";
-        }
-        if (newUsers.length <= 1) {
-            console.log("newUsers before: ", newUsers);
-            coverTop.style.visibility = "visible";
-            coverBottom.style.visibility = "hidden";
-            doneButton[1].style.visibility = "visible";
-            doneButton[0].style.visibility = "hidden";
-            if (data.roomsize === 1) {
-                inviteButton[0].style.visibility = "visible";
-            }
-        }
-    }
     console.log("userjoined triggered in client, ", newUsers);
     if (newUsers.length > 1) {
         newUser.insertAdjacentHTML(
@@ -281,6 +262,7 @@ function setup() {
     newDotsArray = [];
 
     socket = io.connect(`${location.protocol}//${location.host}`);
+    socket.on("setRoom", newDoodle);
     socket.on("mouse", newDoodle);
     socket.on("mouseoff", otherMouseReleased);
     socket.on("userJoined", userJoined);

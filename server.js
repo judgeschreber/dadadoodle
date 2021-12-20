@@ -26,23 +26,23 @@ app.get("/", (req, res) => {
     });
 });
 
-let room;
+let uniqeUrl;
 let ec;
 app.get("/doodle/*", (req, res) => {
-    room = req.params[0];
+    uniqeUrl = req.params[0];
     ec = false;
     console.log("req.params = ", req.params[0]);
     res.render("doodle", {
-        url: `https://dadadoodle.herokuapp.com/doodle/${room}`,
+        url: `https://dadadoodle.herokuapp.com/doodle/${uniqeUrl}`,
     });
 });
 
 app.get("/ec/*", (req, res) => {
-    room = req.params[0];
+    uniqeUrl = req.params[0];
     ec = true;
     console.log("req.params = ", req.params[0]);
     res.render("ec", {
-        url: `https://dadadoodle.herokuapp.com/ec/${room}`,
+        url: `https://dadadoodle.herokuapp.com/ec/${uniqeUrl}`,
     });
 });
 
@@ -51,7 +51,7 @@ const io = require("socket.io")(server, {
     allowRequest: (req, callback) =>
         callback(
             null,
-            req.headers.referer.startsWith("http://localhost:3000") ||
+            req.headers.referer.startsWith(`http://localhost:3000/`) ||
                 req.headers.referer.startsWith(
                     "https://dadadoodle.herokuapp.com"
                 )
@@ -59,40 +59,49 @@ const io = require("socket.io")(server, {
 });
 
 //const io = socket(server);
+
+let room;
+let rooms = {};
 io.on("connection", (socket) => {
-    socket.join(room);
-    roomFull(socket);
+    console.log("referer in connection: ", socket.handshake.headers.referer);
+
+    console.log("new connection: ", socket.id);
     newConnection(socket);
     showNewUser(socket.id);
+    roomFull(socket);
     socket.on("disconnecting", () => {
         console.log("disconnect!", socket.rooms);
-        for (const room of socket.rooms) {
-            if (room && room !== socket.id) {
-                console.log("in if statement");
-                userLeft(socket.id);
-            }
+        console.log("room in disconnecting: ", room);
+        if (room) {
+            let allIds = io.sockets.adapter.rooms.get(room).size;
+            console.log("in if statement");
+            userLeft(socket.id, allIds);
         }
     });
 });
 
 function roomFull(socket) {
+    room = rooms[socket.handshake.headers.referer];
     if (ec && io.sockets.adapter.rooms.get(room).size > 2) {
         socket.emit("roomFull", "this room is full");
     }
 }
 
+let roomName = 0;
 function newConnection(socket) {
-    console.log("new connection: ", socket.id);
-    console.log("randomUrl ", randomUrl);
-    socket.on("mouse", (data) => {
-        console.log("mouseEmit triggered: ", data);
+    if (!rooms.hasOwnProperty(socket.handshake.headers.referer)) {
+        rooms[socket.handshake.headers.referer] = roomName++;
+    }
+    room = rooms[socket.handshake.headers.referer];
+    socket.join(room);
 
+    socket.on("mouse", (data) => {
+        room = rooms[socket.handshake.headers.referer];
         socket.to(room).emit("mouse", data);
         socket.to(room).emit("mouseoff", data);
     });
     socket.on("mouseoff", (data) => {
-        console.log("mouseEmit triggered: ", data);
-
+        room = rooms[socket.handshake.headers.referer];
         socket.to(room).emit("mouse", data);
         socket.to(room).emit("mouseoff", data);
     });
@@ -117,9 +126,9 @@ function showNewUser(id) {
     io.to(room).emit("userJoined", data);
 }
 
-function userLeft(id) {
+function userLeft(id, allIds) {
+    console.log("user left triggered, id: ", id);
     if (room) {
-        let allIds = io.sockets.adapter.rooms.get(room).size;
         console.log("user left: ", allIds);
         data = {
             id: id,
