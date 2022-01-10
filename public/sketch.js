@@ -248,6 +248,9 @@ circleWidthButton.addEventListener("click", function (event) {
 });
 
 function setup() {
+    if (window.innerWidth < 500) {
+        createCanvas(380, 480);
+    }
     createCanvas(windowWidth * 0.5, windowHeight * 0.8);
 
     background("white");
@@ -284,10 +287,6 @@ function newDoodle(data) {
         //Attempting to adjust ratio of different canvases
         newDot.x = width / (data.otherWidth / data.x);
         newDot.y = height / (data.otherHeight / data.y);
-        console.log("newDoodle, x: ", newDot.x);
-        console.log("newDoodle, y: ", newDot.y);
-        console.log("newDoodle, width: ", width);
-        console.log("newDoodle, otherWidth: ", data.otherWidth);
         newDotsArray.push(newDot);
         endShape();
     } else if (data.type == "circle") {
