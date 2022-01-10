@@ -392,3 +392,79 @@ main {
         font-size: 12px;
     }
 }
+
+@media (max-width: 500px) {
+    h2 {
+        font-size: 13px;
+    }
+
+    .invite-button {
+        background-color: white;
+        font-family: monospace;
+        border: black 2px solid;
+        border-radius: 10px;
+        height: 30px;
+        width: 100px;
+        visibility: hidden;
+        font-size: 10px;
+    }
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        width: 100vw;
+        bottom: 0px;
+        margin: 0px;
+        justify-content: space-between;
+        left: 0px;
+    }
+    .color-button {
+        width: 15px;
+        height: 15px;
+        margin: 5px;
+    }
+    .circle-button,
+    #white {
+        width: 13px;
+        height: 13px;
+        margin: 5px;
+    }
+    #line-width-container {
+        height: 13px;
+        width: 13px;
+    }
+
+    .linewidth-button {
+        height: 13px;
+        width: 1px;
+    }
+
+    #horizonal-pattern-button {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        width: 13px;
+        height: 13px;
+        background-color: white;
+    }
+
+    #horizontal-line {
+        width: 100%;
+        height: 1px;
+        background: black;
+    }
+
+    #vertical-pattern-button {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        width: 13px;
+        height: 13px;
+        background-color: white;
+    }
+
+    #vertical-line {
+        height: 100%;
+        width: 1px;
+        background: black;
+    }
+}
