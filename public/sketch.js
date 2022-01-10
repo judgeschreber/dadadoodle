@@ -1,6 +1,5 @@
 let ec = false;
 const parsedUrl = new URL(window.location.href);
-console.log(parsedUrl);
 if (parsedUrl.pathname.startsWith("/ec")) {
     ec = true;
 }
@@ -20,6 +19,22 @@ let circleWidthButton = document.querySelector("#circle-width");
 let inviteSection = document.querySelector("#invite-section");
 let colorText = document.querySelector("#color-text");
 
+let hPatternButton = document.querySelector("#horizonal-pattern-button");
+hPatternButton.addEventListener("click", () => {
+    lineVar = false;
+    circle = false;
+    verticalLines = false;
+    horizontalLines = true;
+});
+
+let vPatternButton = document.querySelector("#vertical-pattern-button");
+vPatternButton.addEventListener("click", () => {
+    lineVar = false;
+    circle = false;
+    horizontalLines = false;
+    verticalLines = true;
+});
+
 //Modal logic
 let modal = document.querySelector("#show-modal");
 let modalStartButton = document.querySelector("#modal-start-button");
@@ -28,9 +43,7 @@ let waitingModal = document.querySelector("#waiting");
 let userName;
 if (ec) {
     modalStartButton.addEventListener("click", () => {
-        console.log("name: ", document.querySelector("#name-field").value);
         userName = document.querySelector("#name-field").value;
-        console.log("start button");
         socket.emit("emitUserName", userName);
     });
 }
@@ -38,28 +51,25 @@ if (ec) {
 let shapeText = document.querySelector("#shape-text");
 let lineButton = document.querySelector("#line");
 lineButton.addEventListener("click", () => {
-    console.log("line button");
     shapeText.innerHTML = "line";
     circle = false;
-    line = true;
+    lineVar = true;
 });
 
 let crazyCircle = false;
 let circleButton = document.querySelector("#circle");
 circleButton.addEventListener("click", () => {
-    console.log("circle button");
     if (!crazyCircle) {
         shapeText.innerHTML = "circle";
     }
     circle = true;
-    line = false;
+    lineVar = false;
 });
 
 let circleOutlineButton = document.querySelector("#circle-outline");
 circleOutlineButton.addEventListener("click", () => {
-    console.log("circle outline button");
     circle = true;
-    line = false;
+    lineVar = false;
     if (circleOutline) {
         circleOutlineButton.style.border = "none";
         shapeText.innerHTML = "circle";
@@ -76,20 +86,16 @@ let doneButton = document.getElementsByClassName("done-button");
 
 let canvas;
 const loadCanvas = () => {
-    console.log("load canvas");
     canvas = document.getElementsByTagName("canvas");
-    console.log("canvas", canvas);
-    console.log("canvas[0]", canvas[0]);
-    console.log("canvas offsetLeft: ", canvas[0].offsetLeft);
-
     //Exquisite Corps logic:
-
     if (ec) {
         console.log("ec?: ", ec);
-        ec = coverTop.style.left = canvas[0].offsetLeft;
+        coverTop.style.left = canvas[0].offsetLeft;
         coverTop.style.top = canvas[0].offsetTop;
+        coverTop.style.width = width;
         coverBottom.style.left = canvas[0].offsetLeft;
         coverBottom.style.bottom = canvas[0].offsetTop;
+        coverBottom.style.width = width;
     }
 };
 window.onload = loadCanvas;
@@ -97,7 +103,6 @@ window.addEventListener("resize", loadCanvas);
 
 let invite = false;
 function showInvite() {
-    console.log("showInvite is triggered");
     invite = !invite;
     if (invite) {
         inviteField[0].style.visibility = "visible";
@@ -119,7 +124,6 @@ document.querySelector("#copy").addEventListener("click", copy);
 
 colorButton.forEach((element) => {
     element.addEventListener("click", function (event) {
-        console.log("click", event.target.id);
         strokeColor = event.target.id;
         if (event.target.id == "white") {
             colorText.style.color = "black";
@@ -138,8 +142,6 @@ if (!ec) {
 }
 
 function userJoined(data) {
-    console.log(data.roomsize);
-
     numberOfDoodlers.innerHTML = `Number of Doodlers: ${data.roomsize}`;
 
     newUsers.push(data.id);
@@ -150,14 +152,11 @@ function userJoined(data) {
     // set canvas covers, the first user has the longest array
 
     if (ec && data.roomsize === 1) {
-        console.log("too many users joined: ");
         inviteButton[0].style.visibility = "visible";
     }
     if (ec && data.roomsize > 2 && newUsers.length == 1) {
-        console.log("too many users joined: ");
         window.location.replace("/");
     }
-    console.log("userjoined triggered in client, ", newUsers);
     if (newUsers.length > 1) {
         newUser.insertAdjacentHTML(
             "beforeend",
@@ -171,7 +170,6 @@ function userJoined(data) {
 
 function roomFull(data) {
     if (newUsers.length < 1) {
-        console.log("too many users joined: ");
         window.location.replace("/");
     }
 }
@@ -179,9 +177,6 @@ function roomFull(data) {
 let waiting = false;
 let userNameArray;
 function namedUserJoined(data) {
-    console.log("named User joined: ", data);
-    console.log("waiting modal: ", waitingModal);
-    console.log("user name: ", userName);
     let playerOne = document.querySelector("#player1");
     let playerTwo = document.querySelector("#player2");
     //if roomSize = 1 show waiting for other user screeen
@@ -196,8 +191,6 @@ function namedUserJoined(data) {
     //if roomSize =2 start doodle
     if (data.name.length == 2) {
         userNameArray = data.name;
-        console.log("modal: ", modal);
-
         coverTop.style.visibility = "hidden";
         coverTop.style.visibility = "visible";
         modal.style.visibility = "hidden";
@@ -213,7 +206,6 @@ function namedUserJoined(data) {
 }
 
 function userLeft(data) {
-    console.log("user left triggered in client");
     numberOfDoodlers.innerHTML = `Number of Doodlers: ${data.roomsize}`;
     newUser.insertAdjacentHTML(
         "beforeend",
@@ -234,11 +226,9 @@ circleOutline = false;
 let linewidthButton = document.querySelector("#line-width-container");
 let lineWidth = document.querySelector("#line-width");
 linewidthButton.addEventListener("click", function (event) {
-    console.log("lineWidthButton");
     if (sW < 11) {
         sW++;
         lineWidth.style.width = `${sW}px`;
-        console.log("width: ", event.target.style.width);
     } else {
         sW = 1;
         lineWidth.style.width = `${sW}px`;
@@ -250,7 +240,6 @@ circleWidthButton.addEventListener("click", function (event) {
         circleWidth += 10;
         event.target.style.width = `${circleWidth}px`;
         event.target.style.height = `${circleWidth}px`;
-        console.log("width: ", event.target.style.width);
     } else {
         circleWidth = 10;
         event.target.style.width = `${circleWidth}px`;
@@ -259,7 +248,7 @@ circleWidthButton.addEventListener("click", function (event) {
 });
 
 function setup() {
-    createCanvas(600, 600);
+    createCanvas(windowWidth * 0.5, windowHeight * 0.8);
 
     background("white");
     noFill();
@@ -279,8 +268,8 @@ function setup() {
     socket.on("roomFull", roomFull);
 }
 
+//Doodle emitted by socket
 function newDoodle(data) {
-    console.log("new Doodle data type: ", data.type);
     if (data.type == "line") {
         stroke(data.strokeColor);
         strokeWeight(data.strokeWeight);
@@ -292,9 +281,13 @@ function newDoodle(data) {
         });
 
         let newDot = {};
-        newDot.x = data.x;
-        newDot.y = data.y;
-
+        //Attempting to adjust ratio of different canvases
+        newDot.x = width / (data.otherWidth / data.x);
+        newDot.y = height / (data.otherHeight / data.y);
+        console.log("newDoodle, x: ", newDot.x);
+        console.log("newDoodle, y: ", newDot.y);
+        console.log("newDoodle, width: ", width);
+        console.log("newDoodle, otherWidth: ", data.otherWidth);
         newDotsArray.push(newDot);
         endShape();
     } else if (data.type == "circle") {
@@ -316,6 +309,7 @@ function newDoodle(data) {
 
 let lineArray = [];
 
+//Waiting animation
 function draw() {
     if (waiting) {
         inviteButton[0].style.visibility = "hidden";
@@ -336,19 +330,23 @@ function draw() {
         endShape();
 
         frameRate(10);
-        console.log("line array: ", lineArray);
     }
 }
 
 let drawing = true;
 let circle = false;
-let line = true;
+let lineVar = true;
+let horizontalLines = false;
 
-function mouseDragged() {
-    if (line) {
+function touchMoved() {
+    if (lineVar) {
         drawLine();
     } else if (circle) {
         drawCircle();
+    } else if (horizontalLines) {
+        drawHorizontalLines();
+    } else if (verticalLines) {
+        drawVerticalLines();
     }
 }
 
@@ -361,19 +359,18 @@ function mouseReleased() {
 }
 
 function otherMouseReleased(data) {
-    console.log("otherMouseReleased");
     if (data.mouseoff == true) {
         newDotsArray = [];
     }
 }
 
 let doneButtonActive = true;
+//done button event listener
 doneButton.forEach((element) => {
     element.addEventListener("click", clickDoneButton);
 });
 
 function clickDoneButton(e) {
-    console.log("done button clicked");
     e.target.style["background-color"] = "red";
     if (doneButtonActive) {
         socket.emit("done", "pressed done");
@@ -383,10 +380,12 @@ function clickDoneButton(e) {
 
 let doneArray = [];
 let afterDrawButtons = document.querySelector("#after-draw-buttons");
+//useDone emitted from socket
 function userDone(data) {
+    //both users have to click done for something to happen
     doneArray.push(data);
-    console.log("userDone in client: ", doneArray);
     if (doneArray.length === 2) {
+        //show canvas
         coverTop.style.visibility = "hidden";
         coverBottom.style.visibility = "hidden";
         afterDrawButtons.style.visibility = "visible";
@@ -394,7 +393,6 @@ function userDone(data) {
 }
 
 redoButton.addEventListener("click", function () {
-    console.log("redoButton triggered");
     if (ec) {
         socket.emit("clear", "clear canvas");
     } else {
@@ -407,19 +405,16 @@ function clearFree() {
 }
 
 function clearCanvas() {
-    console.log("clear canvas in client");
     clear();
     afterDrawButtons.style.visibility = "hidden";
     doneArray = [];
     if (newUsers.length === 2) {
-        console.log("newUsers before: ", newUsers);
         coverTop.style.visibility = "hidden";
         coverBottom.style.visibility = "visible";
         doneButton[0].style.visibility = "visible";
         doneButton[1].style.visibility = "hidden";
     }
     if (newUsers.length <= 1) {
-        console.log("newUsers before: ", newUsers);
         coverTop.style.visibility = "visible";
         coverBottom.style.visibility = "hidden";
         doneButton[1].style.visibility = "visible";
@@ -433,34 +428,19 @@ function clearCanvas() {
 }
 
 function drawLine() {
-    if (ec && newUsers.length == 2) {
-        if (mouseY < 310) {
-            drawing = true;
-        } else {
-            drawing = false;
-        }
-    } else if (ec && newUsers.length == 1) {
-        if (mouseY > 290) {
-            drawing = true;
-        } else {
-            drawing = false;
-        }
-    } else {
-        drawing = true;
-    }
-
-    console.log("distance: ", 300 + canvas[0].offsetTop);
+    setDrawing();
 
     if (drawing) {
         let data;
 
-        console.log("we're in the else statement");
         data = {
             x: mouseX,
             y: mouseY,
             strokeColor: strokeColor,
             strokeWeight: sW,
             type: "line",
+            otherWidth: width,
+            otherHeight: height,
         };
 
         socket.emit("mouse", data);
@@ -480,34 +460,16 @@ function drawLine() {
         dotsArray.push(dot);
         endShape();
     } else {
-        console.log("we're not drawing");
         return;
     }
 }
 
 function drawCircle() {
-    if (ec && newUsers.length == 2) {
-        if (mouseY < 310) {
-            drawing = true;
-        } else {
-            drawing = false;
-        }
-    } else if (ec && newUsers.length == 1) {
-        if (mouseY > 290) {
-            drawing = true;
-        } else {
-            drawing = false;
-        }
-    } else {
-        drawing = true;
-    }
-
-    console.log("distance: ", 300 + canvas[0].offsetTop);
+    setDrawing();
 
     if (drawing) {
         let data;
 
-        console.log("we're in the else statement");
         data = {
             x: mouseX,
             y: mouseY,
@@ -522,13 +484,11 @@ function drawCircle() {
         socket.emit("mouse", data);
         beginShape();
 
-        console.log("circleWidth: ", circleWidth);
         let circle = {};
         circle.x = mouseX;
         circle.y = mouseY;
 
         fill(strokeColor);
-        console.log("stroke: ", stroke);
         if (circleOutline) {
             stroke("black");
             strokeWeight(sW);
@@ -539,7 +499,50 @@ function drawCircle() {
 
         endShape();
     } else {
-        console.log("we're not drawing");
         return;
+    }
+}
+
+function drawHorizontalLines() {
+    setDrawing();
+    console.log("draw horizontal");
+    setTimeout(() => {
+        beginShape();
+
+        line(mouseX - 10, mouseY, mouseX + 10, mouseY);
+
+        stroke(strokeColor);
+        endShape();
+    }, 100);
+}
+
+function drawVerticalLines() {
+    setDrawing();
+    console.log("draw Vertical");
+    setTimeout(() => {
+        beginShape();
+
+        line(mouseX, mouseY - 10, mouseX, mouseY + 10);
+
+        stroke(strokeColor);
+        endShape();
+    }, 100);
+}
+
+function setDrawing() {
+    if (ec && newUsers.length == 2) {
+        if (mouseY < 310) {
+            drawing = true;
+        } else {
+            drawing = false;
+        }
+    } else if (ec && newUsers.length == 1) {
+        if (mouseY > 290) {
+            drawing = true;
+        } else {
+            drawing = false;
+        }
+    } else {
+        drawing = true;
     }
 }
