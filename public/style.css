@@ -411,11 +411,12 @@ main {
     .buttons {
         display: flex;
         flex-direction: row;
-        width: 100vw;
-        bottom: 0px;
+        width: 95vw;
+        bottom: 10px;
         margin: 0px;
         justify-content: space-between;
-        left: 0px;
+        left: 5px;
+        gap: 5px;
     }
     .color-button {
         width: 15px;
@@ -426,6 +427,13 @@ main {
     #white {
         width: 13px;
         height: 13px;
+        margin: 5px;
+    }
+
+    .line-button {
+        width: 13px;
+        height: 3px;
+        background: black;
         margin: 5px;
     }
     #line-width-container {
