@@ -43,6 +43,7 @@ let waitingModal = document.querySelector("#waiting");
 let userName;
 if (ec) {
     modalStartButton.addEventListener("click", () => {
+        console.log("press start");
         userName = document.querySelector("#name-field").value;
         socket.emit("emitUserName", userName);
     });
@@ -247,10 +248,14 @@ circleWidthButton.addEventListener("click", function (event) {
 });
 
 function setup() {
-    if (window.innerWidth < 500) {
-        createCanvas(380, 500);
+    if (window.innerWidth < 508 && window.innerWidth > 400) {
+        createCanvas(370, 500);
+        console.log("setup small screen ", window.innerWidth);
+    } else if (window.innerWidth <= 400) {
+        createCanvas(360, 460);
     } else {
-        createCanvas(windowWidth * 0.5, windowHeight * 0.8);
+        createCanvas(windowWidth * 0.4, windowHeight * 0.8);
+        console.log("setup big screen: ", window.innerWidth);
     }
     background("white");
     noFill();

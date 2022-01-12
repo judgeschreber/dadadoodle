@@ -354,6 +354,7 @@ main {
 }
 
 #waiting-text {
+    position: fixed;
     color: white;
     font-size: 60px;
 }
@@ -474,5 +475,52 @@ main {
         height: 100%;
         width: 1px;
         background: black;
+    }
+
+    .modal-center {
+        width: 400px;
+        height: 400px;
+    }
+
+    .waiting-modal-center {
+        width: 350px;
+        height: 350px;
+    }
+
+    #waiting-text {
+        font-size: 40px;
+    }
+
+    .done-doodling {
+        justify-content: space-between;
+    }
+
+    #imdone-player1 {
+        border: black 2px solid;
+        border-radius: 10px;
+        height: 30px;
+        width: 150px;
+        transform: translateY(50px);
+    }
+
+    #imdone-player2 {
+        border: black 2px solid;
+        border-radius: 10px;
+        height: 30px;
+        width: 150px;
+        transform: translateY(-75px);
+    }
+
+    #player2 {
+        bottom: 70;
+    }
+}
+
+@media (max-height: 690px) {
+    #player2 {
+        bottom: 50;
+    }
+    #imdone-player2 {
+        transform: translateY(-50px);
     }
 }

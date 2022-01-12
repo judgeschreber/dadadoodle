@@ -141,6 +141,7 @@ function clearFree(data) {
 let names = {};
 
 function usersToClient(data) {
+    console.log("users To Client");
     let roomSize = io.sockets.adapter.rooms.get(room).size;
     if (!names[room]) {
         names[room] = [];
