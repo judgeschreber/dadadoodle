@@ -89,7 +89,6 @@ const loadCanvas = () => {
     canvas = document.getElementsByTagName("canvas");
     //Exquisite Corps logic:
     if (ec) {
-        console.log("ec?: ", ec);
         coverTop.style.left = canvas[0].offsetLeft;
         coverTop.style.top = canvas[0].offsetTop;
         coverTop.style.width = width;
@@ -298,7 +297,6 @@ function newDoodle(data) {
             ellipse(data.x, data.y, data.circleWidth, data.circleWidth);
             endShape();
         } else {
-            console.log("new doodle stroke black: ", data.strokeColor);
             stroke(data.strokeColor);
             ellipse(data.x, data.y, data.circleWidth, data.circleWidth);
             endShape();
@@ -504,7 +502,6 @@ function drawCircle() {
 
 function drawHorizontalLines() {
     setDrawing();
-    console.log("draw horizontal");
     setTimeout(() => {
         beginShape();
 
@@ -517,7 +514,6 @@ function drawHorizontalLines() {
 
 function drawVerticalLines() {
     setDrawing();
-    console.log("draw Vertical");
     setTimeout(() => {
         beginShape();
 
