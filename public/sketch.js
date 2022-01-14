@@ -15,6 +15,7 @@ let numberOfDoodlers = document.querySelector("#number-of-doodlers");
 let coverTop = document.querySelector("#cover-top");
 let coverBottom = document.querySelector("#cover-bottom");
 let redoButton = document.querySelector("#redo");
+let saveButton = document.querySelector("#save");
 let circleWidthButton = document.querySelector("#circle-width");
 let inviteSection = document.querySelector("#invite-section");
 let colorText = document.querySelector("#color-text");
@@ -139,6 +140,7 @@ let newUsers = [];
 
 if (!ec) {
     redoButton.style.visibility = "hidden";
+    saveButton.style.visibility = "hidden";
 }
 
 function userJoined(data) {
@@ -147,6 +149,7 @@ function userJoined(data) {
     newUsers.push(data.id);
     if (data.roomsize == newUsers.length) {
         redoButton.style.visibility = "visible";
+        saveButton.style.visibility = "visible";
     }
 
     // set canvas covers, the first user has the longest array
@@ -254,10 +257,10 @@ function setup() {
     } else if (window.innerWidth <= 400) {
         createCanvas(360, 460);
     } else {
-        createCanvas(windowWidth * 0.4, windowHeight * 0.8);
+        createCanvas(windowWidth * 0.4, windowHeight * 0.7);
         console.log("setup big screen: ", window.innerWidth);
     }
-    background("white");
+    background(0, 0, 0, 1);
     noFill();
     dotsArray = [];
     newDotsArray = [];
@@ -273,6 +276,10 @@ function setup() {
     socket.on("clearFree", clearFree);
     socket.on("namedUsers", namedUserJoined);
     socket.on("roomFull", roomFull);
+
+    saveButton.addEventListener("click", function () {
+        saveCanvas("myDoodle", "png");
+    });
 }
 
 //Doodle emitted by socket
