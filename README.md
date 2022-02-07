@@ -8,6 +8,6 @@ https://dadadoodle.herokuapp.com/
 
 **_Waiting Animation_**
 
-In dada-doodle-mode you draw together but you don't see what the ohter draws. This requires 2 painters to join the fun. Until the second user joins, the first user sees a waiting animation. I created this animation of a randomly and infinitely drawn line using the JavaScript Canvas library p5.js.
+In dada-doodle-mode you draw together but you don't see what the other user draws. This requires 2 painters to join the fun. Until the second user joins, the first user sees a waiting animation. I created this animation of a randomly and infinitely drawn line using the JavaScript Canvas library p5.js.
 
 <img src="public/previews/waiting-animation.gif">
